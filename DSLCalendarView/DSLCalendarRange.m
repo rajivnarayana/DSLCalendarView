@@ -98,4 +98,7 @@
     return YES;
 }
 
+-(NSString *)description {
+    return [NSString stringWithFormat:@"%@ - %@", _startDate, _endDate];
+}
 @end

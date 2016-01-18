@@ -32,6 +32,7 @@
 
 #import "DSLCalendarRange.h"
 #import "NSDate+DSLCalendarView.h"
+#import "DSLCalendarDayView.h"
 @protocol DSLCalendarViewDelegate;
 
 
@@ -41,6 +42,12 @@
 @property (nonatomic, copy) NSDateComponents *visibleMonth;
 @property (nonatomic, strong) DSLCalendarRange *selectedRange;
 @property (nonatomic, assign) BOOL showDayCalloutView;
+
+//Theming support
+@property (nonatomic, strong) UIColor *daySelectionColor;
+@property (nonatomic, strong) UIColor *rangeSelectionColor;
+@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong) UIColor *selectionTextColor;
 
 + (Class)monthSelectorViewClass;
 + (Class)monthViewClass;
@@ -59,5 +66,6 @@
 - (void)calendarView:(DSLCalendarView *)calendarView didChangeToVisibleMonth:(NSDateComponents*)month;
 - (DSLCalendarRange*)calendarView:(DSLCalendarView*)calendarView didDragToDay:(NSDateComponents*)day selectingRange:(DSLCalendarRange*)range;
 - (BOOL)calendarView:(DSLCalendarView *)calendarView shouldAnimateDragToMonth:(NSDateComponents*)month;
+- (void)calendarView:(DSLCalendarView*)calendarView positionCalloutViewForDayView:(DSLCalendarDayView *)dayView;
 
 @end

@@ -105,6 +105,11 @@
                 dayFrame.size.height = _dayViewHeight;
                 
                 DSLCalendarDayView *dayView = [[_dayViewClass alloc] initWithFrame:dayFrame];
+                dayView.selectionDayColor = self.daySelectionColor;
+                dayView.selectionRangeColor = self.rangeSelectionColor;
+                dayView.textColor = self.textColor;
+                dayView.selectionTextColor = self.selectionTextColor;
+                
                 dayView.day = day;
                 switch (column) {
                     case 0:
@@ -225,6 +230,36 @@
 
 - (DSLCalendarDayView*)dayViewForDay:(NSDateComponents*)day {
     return [self.dayViewsDictionary objectForKey:[self dayViewKeyForDay:day]];
+}
+
+#pragma mark - Theming support
+
+-(void)setDaySelectionColor:(UIColor *)daySelectionColor {
+    _daySelectionColor = daySelectionColor;
+    [self.dayViewsDictionary.allValues enumerateObjectsUsingBlock:^(id dayView, NSUInteger idx, BOOL *stop) {
+        ((DSLCalendarDayView *)dayView).selectionDayColor = daySelectionColor;
+    }];
+}
+
+-(void)setRangeSelectionColor:(UIColor *)rangeSelectionColor {
+    _rangeSelectionColor = rangeSelectionColor;
+    [self.dayViewsDictionary.allValues enumerateObjectsUsingBlock:^(id dayView, NSUInteger idx, BOOL *stop) {
+        ((DSLCalendarDayView *)dayView).selectionRangeColor = rangeSelectionColor;
+    }];
+}
+
+-(void)setTextColor:(UIColor *)textColor {
+    _textColor = textColor;
+    [self.dayViewsDictionary.allValues enumerateObjectsUsingBlock:^(id dayView, NSUInteger idx, BOOL *stop) {
+        ((DSLCalendarDayView *)dayView).textColor = textColor;
+    }];
+}
+
+-(void)setSelectionTextColor:(UIColor *)selectionTextColor {
+    _selectionTextColor = selectionTextColor;
+    [self.dayViewsDictionary.allValues enumerateObjectsUsingBlock:^(id dayView, NSUInteger idx, BOOL *stop) {
+        ((DSLCalendarDayView *)dayView).selectionTextColor = selectionTextColor;
+    }];
 }
 
 @end

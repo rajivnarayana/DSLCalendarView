@@ -23,6 +23,8 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     self.calendarView.delegate = self;
+//    self.calendarView.daySelectionColor = [UIColor redColor];
+//    self.calendarView.rangeSelectionColor = [UIColor grayColor];
 }
 
 - (void)viewDidUnload
@@ -52,7 +54,7 @@
     if (NO) { // Only select a single day
         return [[DSLCalendarRange alloc] initWithStartDay:day endDay:day];
     }
-    else if (NO) { // Don't allow selections before today
+    else if (YES) { // Don't allow selections before today
         NSDateComponents *today = [[NSDate date] dslCalendarView_dayWithCalendar:calendarView.visibleMonth.calendar];
         
         NSDateComponents *startDate = range.startDay;
@@ -84,8 +86,15 @@
     NSLog(@"Now showing %@", month);
 }
 
+- (BOOL)calendarView:(DSLCalendarView *)calendarView shouldAnimateDragToMonth:(NSDateComponents *)month {
+    return YES;
+}
+
 - (BOOL)day:(NSDateComponents*)day1 isBeforeDay:(NSDateComponents*)day2 {
     return ([day1.date compare:day2.date] == NSOrderedAscending);
 }
 
+- (void)calendarView:(DSLCalendarView *)calendarView positionCalloutViewForDayView:(DSLCalendarDayView *)dayView {
+    NSLog(@"DayView : %@, range: %@", dayView.dayAsDate, calendarView.selectedRange);
+}
 @end

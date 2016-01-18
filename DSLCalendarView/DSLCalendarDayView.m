@@ -36,16 +36,16 @@
 
 @interface DSLCalendarDayView ()
 
+@property (nonatomic, strong) UILabel *dateLabel;
+@property (nonatomic, strong) NSCalendar *calendar;
+@property (nonatomic, strong) NSDate *dayAsDate;
+
 @end
 
 
-@implementation DSLCalendarDayView {
-    __strong NSCalendar *_calendar;
-    __strong NSDate *_dayAsDate;
-    __strong NSDateComponents *_day;
-    __strong NSString *_labelText;
-}
+@implementation DSLCalendarDayView
 
+@synthesize day = _day;
 
 #pragma mark - Initialisation
 
@@ -54,6 +54,10 @@
     if (self != nil) {
         self.backgroundColor = [UIColor whiteColor];
         _positionInWeek = DSLCalendarDayViewMidWeek;
+        _dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        _dateLabel.textAlignment = NSTextAlignmentCenter;
+        _dateLabel.font = [UIFont boldSystemFontOfSize:17.0];
+        [self addSubview:_dateLabel];
     }
     
     return self;
@@ -71,7 +75,7 @@
     _calendar = [day calendar];
     _dayAsDate = [day date];
     _day = nil;
-    _labelText = [NSString stringWithFormat:@"%ld", (long)day.day];
+    _dateLabel.text = [NSString stringWithFormat:@"%ld", (long)day.day];
 }
 
 - (NSDateComponents*)day {
@@ -88,7 +92,7 @@
 
 - (void)setInCurrentMonth:(BOOL)inCurrentMonth {
     _inCurrentMonth = inCurrentMonth;
-    [self setNeedsDisplay];
+    _dateLabel.textColor = _inCurrentMonth ? [UIColor blackColor] : [UIColor grayColor];
 }
 
 
@@ -98,8 +102,6 @@
     if ([self isMemberOfClass:[DSLCalendarDayView class]]) {
         // If this isn't a subclass of DSLCalendarDayView, use the default drawing
         [self drawBackground];
-        [self drawBorders];
-        [self drawDayNumber];
     }
 }
 
@@ -107,79 +109,101 @@
 #pragma mark Drawing
 
 - (void)drawBackground {
-    if (self.selectionState == DSLCalendarDayViewNotSelected) {
-        if (self.isInCurrentMonth) {
-            [[UIColor colorWithWhite:245.0/255.0 alpha:1.0] setFill];
-        }
-        else {
-            [[UIColor colorWithWhite:225.0/255.0 alpha:1.0] setFill];
-        }
-        UIRectFill(self.bounds);
-    }
-    else {
-        switch (self.selectionState) {
-            case DSLCalendarDayViewNotSelected:
-                break;
-                
-            case DSLCalendarDayViewStartOfSelection:
-                [[[UIImage imageNamed:@"DSLCalendarDaySelection-left"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 20, 20, 20)] drawInRect:self.bounds];
-                break;
-                
-            case DSLCalendarDayViewEndOfSelection:
-                [[[UIImage imageNamed:@"DSLCalendarDaySelection-right"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 20, 20, 20)] drawInRect:self.bounds];
-                break;
-                
-            case DSLCalendarDayViewWithinSelection:
-                [[[UIImage imageNamed:@"DSLCalendarDaySelection-middle"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 20, 20, 20)] drawInRect:self.bounds];
-                break;
-                
-            case DSLCalendarDayViewWholeSelection:
-                [[[UIImage imageNamed:@"DSLCalendarDaySelection"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 20, 20, 20)] drawInRect:self.bounds];
-                break;
-        }
-    }
-}
-
-- (void)drawBorders {
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    CGContextSetLineWidth(context, 1.0);
-    
-    CGContextSaveGState(context);
-    CGContextSetStrokeColorWithColor(context, [UIColor colorWithWhite:255.0/255.0 alpha:1.0].CGColor);
-    CGContextMoveToPoint(context, 0.5, self.bounds.size.height - 0.5);
-    CGContextAddLineToPoint(context, 0.5, 0.5);
-    CGContextAddLineToPoint(context, self.bounds.size.width - 0.5, 0.5);
-    CGContextStrokePath(context);
-    CGContextRestoreGState(context);
-    
-    CGContextSaveGState(context);
+    UIColor *backgroundColor;
     if (self.isInCurrentMonth) {
-        CGContextSetStrokeColorWithColor(context, [UIColor colorWithWhite:205.0/255.0 alpha:1.0].CGColor);
+        backgroundColor = [UIColor colorWithWhite:245.0/255.0 alpha:1.0];
     }
     else {
-        CGContextSetStrokeColorWithColor(context, [UIColor colorWithWhite:185.0/255.0 alpha:1.0].CGColor);
+        backgroundColor = [UIColor colorWithWhite:225.0/255.0 alpha:1.0];
     }
-    CGContextMoveToPoint(context, self.bounds.size.width - 0.5, 0.0);
-    CGContextAddLineToPoint(context, self.bounds.size.width - 0.5, self.bounds.size.height - 0.5);
-    CGContextAddLineToPoint(context, 0.0, self.bounds.size.height - 0.5);
+    switch (self.selectionState) {
+        case DSLCalendarDayViewStartOfSelection:
+            [[self circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:YES] drawInRect:self.bounds];
+            break;
+            
+        case DSLCalendarDayViewEndOfSelection:
+            [[self circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:NO] drawInRect:self.bounds];
+            break;
+            
+        case DSLCalendarDayViewWithinSelection:
+            [[self stripImageForStartOfSelectionWithBounds:self.bounds.size height:self.bounds.size.height/2 color:_selectionRangeColor backgroundColor:backgroundColor] drawInRect:self.bounds];
+            break;
+            
+        case DSLCalendarDayViewWholeSelection:
+            [[self circleImageForSingleSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor] drawInRect:self.bounds];
+            break;
+            
+        case DSLCalendarDayViewNotSelected:
+        default:
+            [backgroundColor setFill];
+            UIRectFill(self.bounds);
+    }
+}
+
+-(UIImage *)circleImageForStartOfSelectionWithBounds:(CGSize )size
+                                              radius:(CGFloat)radius
+                                               color:(UIColor *)color
+                                     backgroundColor:(UIColor *)backgroundColor
+                                          stripColor:(UIColor *)stripColor
+                                         stripHeight:(CGFloat)stripHeight
+                                               start:(BOOL)start {
+    radius = MIN(MAX(size.width, size.height)/2-1, radius);
+    stripHeight = MIN(size.height , stripHeight);
+
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+
+    [stripColor setFill];
+    UIRectFill(CGRectOffset(CGRectMake(start ?size.width/2 : 0, 0, size.width/2, stripHeight), 0, size.height/2 - stripHeight/2));
+
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextSetLineWidth(context, 2); // set the line width
+    CGContextSetStrokeColorWithColor(context, color.CGColor);
+    CGPathRef pathRef = CGPathCreateWithEllipseInRect(CGRectOffset(CGRectMake(0, 0, radius * 2, radius * 2), size.width/2 - radius, size.height/2- radius), nil);
+    CGContextAddPath(context, pathRef);
+    CGContextFillPath(context);
+    CGContextAddPath(context, pathRef);
     CGContextStrokePath(context);
-    CGContextRestoreGState(context);
+    CGPathRelease(pathRef);
+    UIImage *ellipseImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return ellipseImage;
 }
 
-- (void)drawDayNumber {
-    if (self.selectionState == DSLCalendarDayViewNotSelected) {
-        [[UIColor colorWithWhite:66.0/255.0 alpha:1.0] set];
-    }
-    else {
-        [[UIColor whiteColor] set];
-    }
-    
-    UIFont *textFont = [UIFont boldSystemFontOfSize:17.0];
-    CGSize textSize = [_labelText sizeWithFont:textFont];
-    
-    CGRect textRect = CGRectMake(ceilf(CGRectGetMidX(self.bounds) - (textSize.width / 2.0)), ceilf(CGRectGetMidY(self.bounds) - (textSize.height / 2.0)), textSize.width, textSize.height);
-    [_labelText drawInRect:textRect withFont:textFont];
+-(UIImage *)stripImageForStartOfSelectionWithBounds:(CGSize)size height:(CGFloat)height color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor {
+    height = MIN(size.height , height);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+
+    [color setFill];
+    UIRectFill(CGRectOffset(CGRectMake(0, 0, size.width, height), 0, size.height/2 - height/2));
+    UIImage *stripImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return stripImage;
 }
 
+//Draw two concentric circles.
+-(UIImage *)circleImageForSingleSelectionWithBounds:(CGSize )size
+                                              radius:(CGFloat)radius
+                                               color:(UIColor *)color
+                                     backgroundColor:(UIColor *)backgroundColor {
+    CGFloat outerRadius = radius + 4;
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    CGContextSetLineWidth(context, 2); // set the line width
+    CGContextSetStrokeColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillEllipseInRect(context, CGRectOffset(CGRectMake(0, 0, outerRadius * 2, outerRadius * 2), size.width/2 - outerRadius, size.height/2- outerRadius));
+    CGContextStrokeEllipseInRect(context, CGRectOffset(CGRectMake(0, 0, radius * 2, radius * 2), size.width/2 - radius, size.height/2- radius));
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
 @end
