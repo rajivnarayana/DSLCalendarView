@@ -52,7 +52,7 @@
     static UINib *nib;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        nib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:nil];
+        nib = [UINib nibWithNibName:NSStringFromClass([self class]) bundle:[NSBundle bundleForClass:[self class]]];
     });
     
     NSArray *nibObjects = [nib instantiateWithOwner:nil options:nil];
