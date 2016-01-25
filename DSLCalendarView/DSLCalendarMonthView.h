@@ -41,10 +41,8 @@
 @property (nonatomic, strong, readonly) NSSet *dayViews;
 
 //Theming support
-@property (nonatomic, strong) UIColor *daySelectionColor;
-@property (nonatomic, strong) UIColor *rangeSelectionColor;
 @property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic, strong) UIColor *selectionTextColor;
+@property (nonatomic, strong) UIColor *selectionColor;
 
 // Designated initialiser
 - (id)initWithMonth:(NSDateComponents*)month width:(CGFloat)width dayViewClass:(Class)dayViewClass dayViewHeight:(CGFloat)dayViewHeight;

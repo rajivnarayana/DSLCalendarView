@@ -58,9 +58,7 @@ enum {
 /**
  * Theming support.
  */
-@property (nonatomic, strong) UIColor *selectionDayColor;
-@property (nonatomic, strong) UIColor *selectionRangeColor;
 @property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic, strong) UIColor *selectionTextColor;
+@property (nonatomic, strong) UIColor *selectionColor;
 
 @end

@@ -44,10 +44,8 @@
 @property (nonatomic, assign) BOOL showDayCalloutView;
 
 //Theming support
-@property (nonatomic, strong) UIColor *daySelectionColor;
-@property (nonatomic, strong) UIColor *rangeSelectionColor;
 @property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic, strong) UIColor *selectionTextColor;
+@property (nonatomic, strong) UIColor *selectionColor;
 
 + (Class)monthSelectorViewClass;
 + (Class)monthViewClass;

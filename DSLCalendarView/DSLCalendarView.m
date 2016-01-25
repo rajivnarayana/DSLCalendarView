@@ -88,10 +88,8 @@
 - (void)commonInit {
     
     //Add additional defaults
-    _daySelectionColor = [UIColor purpleColor];
-    _rangeSelectionColor = [UIColor colorWithRed:112.f/255 green:0 blue:112.f/255 alpha:0.6f];
     _textColor = [UIColor blackColor];
-    _selectionTextColor = [UIColor blackColor];
+    _selectionColor = [UIColor purpleColor];
     
     _showDayCalloutView = NO;
     //Add additional defaults end
@@ -213,10 +211,8 @@
     DSLCalendarMonthView *monthView = [self.monthViews objectForKey:monthViewKey];
     if (monthView == nil) {
         monthView = [[[[self class] monthViewClass] alloc] initWithMonth:month width:self.bounds.size.width dayViewClass:[[self class] dayViewClass] dayViewHeight:_dayViewHeight];
-        monthView.daySelectionColor = self.daySelectionColor;
-        monthView.rangeSelectionColor = self.rangeSelectionColor;
         monthView.textColor = self.textColor;
-        monthView.selectionTextColor = self.selectionTextColor;
+        monthView.selectionColor = self.selectionColor;
         
         [self.monthViews setObject:monthView forKey:monthViewKey];
         [self.monthContainerViewContentView addSubview:monthView];
@@ -544,19 +540,6 @@
 }
 
 #pragma mark - Theming support
--(void)setDaySelectionColor:(UIColor *)daySelectionColor {
-    _daySelectionColor = daySelectionColor;
-    [self.monthViews.allValues enumerateObjectsUsingBlock:^(DSLCalendarMonthView *monthView, NSUInteger idx, BOOL *stop) {
-        monthView.daySelectionColor = daySelectionColor;
-    }];
-}
-
--(void)setRangeSelectionColor:(UIColor *)rangeSelectionColor {
-    _rangeSelectionColor = rangeSelectionColor;
-    [self.monthViews.allValues enumerateObjectsUsingBlock:^(DSLCalendarMonthView *monthView, NSUInteger idx, BOOL *stop) {
-        monthView.rangeSelectionColor = rangeSelectionColor;
-    }];
-}
 
 -(void)setTextColor:(UIColor *)textColor {
     _textColor = textColor;
@@ -565,10 +548,10 @@
     }];
 }
 
--(void)setSelectionTextColor:(UIColor *)selectionTextColor {
-    _selectionTextColor = selectionTextColor;
+-(void)setSelectionColor:(UIColor *)selectionColor {
+    _selectionColor = selectionColor;
     [self.monthViews.allValues enumerateObjectsUsingBlock:^(DSLCalendarMonthView *monthView, NSUInteger idx, BOOL *stop) {
-        monthView.selectionTextColor = selectionTextColor;
+        monthView.selectionColor = selectionColor;
     }];
 }
 

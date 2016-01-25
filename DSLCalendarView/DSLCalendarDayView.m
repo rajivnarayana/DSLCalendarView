@@ -39,6 +39,9 @@
 @property (nonatomic, strong) UILabel *dateLabel;
 @property (nonatomic, strong) NSCalendar *calendar;
 @property (nonatomic, strong) NSDate *dayAsDate;
+@property (nonatomic, strong) UIColor *selectionDayColor;
+@property (nonatomic, strong) UIColor *selectionRangeColor;
+@property (nonatomic, strong) UIColor *selectionTextColor;
 
 @end
 
@@ -92,7 +95,7 @@
 
 - (void)setInCurrentMonth:(BOOL)inCurrentMonth {
     _inCurrentMonth = inCurrentMonth;
-    _dateLabel.textColor = _inCurrentMonth ? [UIColor blackColor] : [UIColor grayColor];
+    _dateLabel.textColor = _inCurrentMonth ? self.textColor : [UIColor grayColor];
 }
 
 
@@ -105,6 +108,19 @@
     }
 }
 
+#pragma mark - Theming support
+
+-(void)setTextColor:(UIColor *)textColor {
+    _textColor = textColor;
+    self.inCurrentMonth = self.inCurrentMonth;
+}
+
+-(void)setSelectionColor:(UIColor *)selectionColor {
+    self.selectionDayColor = selectionColor;
+    self.selectionRangeColor = [selectionColor colorWithAlphaComponent:0.4f];
+    self.selectionTextColor = [UIColor whiteColor];
+    [self setNeedsDisplay];
+}
 
 #pragma mark Drawing
 
@@ -118,19 +134,19 @@
     }
     switch (self.selectionState) {
         case DSLCalendarDayViewStartOfSelection:
-            [[self circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:YES] drawInRect:self.bounds];
+            [[DSLCalendarDayView circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:YES] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewEndOfSelection:
-            [[self circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:NO] drawInRect:self.bounds];
+            [[DSLCalendarDayView circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:NO] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewWithinSelection:
-            [[self stripImageForStartOfSelectionWithBounds:self.bounds.size height:self.bounds.size.height/2 color:_selectionRangeColor backgroundColor:backgroundColor] drawInRect:self.bounds];
+            [[DSLCalendarDayView stripImageForStartOfSelectionWithBounds:self.bounds.size height:self.bounds.size.height/2 color:_selectionRangeColor backgroundColor:backgroundColor] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewWholeSelection:
-            [[self circleImageForSingleSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor] drawInRect:self.bounds];
+            [[DSLCalendarDayView circleImageForSingleSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewNotSelected:
@@ -140,7 +156,7 @@
     }
 }
 
--(UIImage *)circleImageForStartOfSelectionWithBounds:(CGSize )size
++(UIImage *)circleImageForStartOfSelectionWithBounds:(CGSize )size
                                               radius:(CGFloat)radius
                                                color:(UIColor *)color
                                      backgroundColor:(UIColor *)backgroundColor
@@ -172,7 +188,7 @@
     return ellipseImage;
 }
 
--(UIImage *)stripImageForStartOfSelectionWithBounds:(CGSize)size height:(CGFloat)height color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor {
++(UIImage *)stripImageForStartOfSelectionWithBounds:(CGSize)size height:(CGFloat)height color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor {
     height = MIN(size.height , height);
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -187,7 +203,7 @@
 }
 
 //Draw two concentric circles.
--(UIImage *)circleImageForSingleSelectionWithBounds:(CGSize )size
++(UIImage *)circleImageForSingleSelectionWithBounds:(CGSize )size
                                               radius:(CGFloat)radius
                                                color:(UIColor *)color
                                      backgroundColor:(UIColor *)backgroundColor {
@@ -206,4 +222,5 @@
     UIGraphicsEndImageContext();
     return image;
 }
+
 @end
