@@ -94,7 +94,7 @@
     _showDayCalloutView = NO;
     //Add additional defaults end
     
-    _dayViewHeight = 44;
+    _dayViewHeight = 40;
     
     _visibleMonth = [[NSCalendar currentCalendar] components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekdayCalendarUnit | NSCalendarCalendarUnit fromDate:[NSDate date]];
     _visibleMonth.day = 1;
@@ -446,7 +446,13 @@
     }
     
     if (!self.draggedOffStartDay && [self.draggingStartDay isEqual:touchedView.day]) {
-        self.selectedRange = [[DSLCalendarRange alloc] initWithStartDay:touchedView.day endDay:touchedView.day];
+        
+        DSLCalendarRange *newRange = [[DSLCalendarRange alloc] initWithStartDay:touchedView.day endDay:touchedView.day];
+        if ([self.delegate respondsToSelector:@selector(calendarView:didDragToDay:selectingRange:)]) {
+            newRange = [self.delegate calendarView:self didDragToDay:touchedView.day selectingRange:newRange];
+        }
+        
+        self.selectedRange = newRange;
     }
     
     self.draggingStartDay = nil;

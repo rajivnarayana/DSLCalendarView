@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "DSLCalendarView"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
   s.summary      = "Simple calendar view for iOS."
   s.description  = "DSLCalendar view is an iOS control that displays a calendar similar to the system calendar. It allows the user to select a single date or a date range."
   s.author       = { "Pete" => "pete@dativestudios.com" }

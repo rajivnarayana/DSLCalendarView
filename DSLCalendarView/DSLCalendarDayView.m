@@ -117,7 +117,7 @@
 
 -(void)setSelectionColor:(UIColor *)selectionColor {
     self.selectionDayColor = selectionColor;
-    self.selectionRangeColor = [selectionColor colorWithAlphaComponent:0.4f];
+    self.selectionRangeColor = [selectionColor colorWithAlphaComponent:0.8f];
     self.selectionTextColor = [UIColor whiteColor];
     [self setNeedsDisplay];
 }
@@ -134,15 +134,15 @@
     }
     switch (self.selectionState) {
         case DSLCalendarDayViewStartOfSelection:
-            [[DSLCalendarDayView circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:YES] drawInRect:self.bounds];
+            [[DSLCalendarDayView circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height * 2 / 3 start:YES] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewEndOfSelection:
-            [[DSLCalendarDayView circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height/2 start:NO] drawInRect:self.bounds];
+            [[DSLCalendarDayView circleImageForStartOfSelectionWithBounds:self.bounds.size radius:self.bounds.size.height/3 color:_selectionDayColor backgroundColor:backgroundColor stripColor:_selectionRangeColor stripHeight:self.bounds.size.height * 2 / 3 start:NO] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewWithinSelection:
-            [[DSLCalendarDayView stripImageForStartOfSelectionWithBounds:self.bounds.size height:self.bounds.size.height/2 color:_selectionRangeColor backgroundColor:backgroundColor] drawInRect:self.bounds];
+            [[DSLCalendarDayView stripImageForStartOfSelectionWithBounds:self.bounds.size height:self.bounds.size.height * 2/3 color:_selectionRangeColor backgroundColor:backgroundColor] drawInRect:self.bounds];
             break;
             
         case DSLCalendarDayViewWholeSelection:
@@ -164,7 +164,7 @@
                                          stripHeight:(CGFloat)stripHeight
                                                start:(BOOL)start {
     radius = MIN(MAX(size.width, size.height)/2-1, radius);
-    stripHeight = MIN(size.height , stripHeight);
+    stripHeight = MIN(size.height , stripHeight + 1);
 
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -175,7 +175,7 @@
     UIRectFill(CGRectOffset(CGRectMake(start ?size.width/2 : 0, 0, size.width/2, stripHeight), 0, size.height/2 - stripHeight/2));
 
     CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
-    CGContextSetLineWidth(context, 2); // set the line width
+    CGContextSetLineWidth(context, 1); // set the line width
     CGContextSetStrokeColorWithColor(context, color.CGColor);
     CGPathRef pathRef = CGPathCreateWithEllipseInRect(CGRectOffset(CGRectMake(0, 0, radius * 2, radius * 2), size.width/2 - radius, size.height/2- radius), nil);
     CGContextAddPath(context, pathRef);
@@ -189,7 +189,7 @@
 }
 
 +(UIImage *)stripImageForStartOfSelectionWithBounds:(CGSize)size height:(CGFloat)height color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor {
-    height = MIN(size.height , height);
+    height = MIN(size.height , height + 1);
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
@@ -207,14 +207,14 @@
                                               radius:(CGFloat)radius
                                                color:(UIColor *)color
                                      backgroundColor:(UIColor *)backgroundColor {
-    CGFloat outerRadius = radius + 4;
+    CGFloat outerRadius = radius + 2;
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.f);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
     CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
 
     CGContextSetFillColorWithColor(context, color.CGColor);
-    CGContextSetLineWidth(context, 2); // set the line width
+    CGContextSetLineWidth(context, 1); // set the line width
     CGContextSetStrokeColorWithColor(context, backgroundColor.CGColor);
     CGContextFillEllipseInRect(context, CGRectOffset(CGRectMake(0, 0, outerRadius * 2, outerRadius * 2), size.width/2 - outerRadius, size.height/2- outerRadius));
     CGContextStrokeEllipseInRect(context, CGRectOffset(CGRectMake(0, 0, radius * 2, radius * 2), size.width/2 - radius, size.height/2- radius));
